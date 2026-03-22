@@ -40,7 +40,7 @@ export class OrderTracker {
   }
 
   refreshStatus() {
-    this.http.get<any[]>('/api/customer/my-order-status').subscribe(data => {
+    this.http.get<any[]>('customer/my-order-status').subscribe(data => {
       this.orderItems.set(data);
     });
   }

@@ -1,4 +1,23 @@
-@import 'tailwindcss';
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #8b0000; /* Deep Crimson */
+  --color-brand-accent: #ff4d4d; /* Vibrant Cinnabar */
+  --color-brand-dark: #1a0505; /* Near Black with Red Undertone */
+
+  --font-display: "Playfair Display", serif;
+  --font-body: "Inter", sans-serif;
+
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2.5rem;
+}
+
+/* Custom utility for the "Glass" effect used on the menu */
+@utility glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(139, 0, 0, 0.1);
+}
 
 /* You can add global styles to this file, and also import other style files */
 :root {
@@ -63,19 +82,10 @@ button:focus-visible {
   padding: 2em;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
-
 .analog-markdown p {
   text-align: left;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }

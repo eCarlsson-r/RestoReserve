@@ -1,16 +1,28 @@
 // src/app/pages/table/[tableId].page.ts
 import { Component, computed, inject, signal } from '@angular/core';
 import { addToCart, cartCount, cartTotal } from '../../stores/cart.store';
+import { GeoBlockComponent } from '../../components/geo-block.component';
+import { calculateDistance } from '../../utils/geo';
 import { MenuService } from '../../services/menu.service';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { LucideAngularModule } from 'lucide-angular';
+import { RouteMeta } from '@analogjs/router';
+import { authGuard } from '../../guards/auth.guard';
+
+export const routeMeta: RouteMeta = {
+  canActivate: [authGuard]
+};
 
 @Component({
   selector: 'app-customer-menu',
   standalone: true,
-  imports: [CommonModule, LucideAngularModule],
+  imports: [CommonModule, LucideAngularModule, GeoBlockComponent],
   template: `
+    <app-geo-block 
+      *ngIf="isTooFar()" 
+      (retry)="checkProximity()" 
+    />
     <div *ngIf="menuService.isLoading()">
        <div class="animate-pulse p-6 space-y-4">
          <div class="h-10 w-1/2 bg-slate-100 rounded-lg"></div>
@@ -62,14 +74,14 @@ import { LucideAngularModule } from 'lucide-angular';
             <p class="text-xs text-slate-400">{{ product.description }}</p>
             <p class="mt-2 font-black">Rp {{ product.price | number }}</p>
           </div>
-          <div class="w-24 h-24 bg-slate-50 rounded-[2rem] overflow-hidden">
+          <div class="w-24 h-24 bg-slate-50 rounded-4xl overflow-hidden">
             <img [src]="'/images/' + product.imgId" class="w-full h-full object-cover" />
           </div>
         </div>
       </div>
 
       <div *ngIf="cartCount() > 0" 
-           class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] bg-black text-white p-6 rounded-[2.5rem] flex justify-between items-center shadow-2xl animate-in slide-in-from-bottom">
+           class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] bg-black text-white p-6 rounded-2xl flex justify-between items-center shadow-2xl animate-in slide-in-from-bottom">
         <div>
           <p class="text-[10px] font-bold uppercase opacity-60">{{ cartCount() }} Items</p>
           <p class="font-black italic">View Order</p>
@@ -82,40 +94,60 @@ import { LucideAngularModule } from 'lucide-angular';
   `
 })
 export default class CustomerMenuPage {
-    menuService = inject(MenuService);
-    tableId = inject(ActivatedRoute).snapshot.params['tableId'];
-    
-    cartCount = cartCount;
-    cartTotal = cartTotal;
-    addToCart = addToCart;
+  menuService = inject(MenuService);
+  tableId = inject(ActivatedRoute).snapshot.params['tableId'];
 
-    selectedCategory = signal('NS'); // Default to Nasi
+  isTooFar = signal(false);
+  restaurantCoords = { lat: -6.2345, lng: 106.8123 }; // This should come from your Laravel Branch API
   
-    // Computed signal: Automatically updates whenever selectedCategory or products change
-    filteredProducts = computed(() => {
-      return this.menuService.products().filter(
-        p => p.categoryId === this.selectedCategory()
-      );
-    });
+  cartCount = cartCount;
+  cartTotal = cartTotal;
+  addToCart = addToCart;
 
-    products = signal([]);
-    categories = signal([]);
+  selectedCategory = signal(1); // Default to Nasi
+
+  // Computed signal: Automatically updates whenever selectedCategory or products change
+  filteredProducts = computed(() => {
+    return this.menuService.products().filter(
+      p => p.categoryId === this.selectedCategory()
+    );
+  });
+
+  products = signal([]);
+  categories = signal([]);
 
   ngOnInit() {
+    this.checkProximity();
     // Usually, you'd get the branch code from the URL or a token
     this.menuService.loadMenuData('DMBRC').subscribe();
   }
   
-  callWaiter() {
-    const payload = {
+  callWaiter(type: 'ASSISTANCE' | 'BILL' = 'ASSISTANCE') {
+    this.menuService.callWaiter({
       table: this.tableId,
       branch: 'DMBRC',
-      type: 'ASSISTANCE' // or 'BILL'
-    };
-
-    this.http.post('/api/customer/call-waiter', payload).subscribe({
+      type: type
+    }).subscribe({
       next: () => alert('A waiter is on their way!'),
       error: () => alert('Connection error. Please try again.')
+    });
+  }
+
+  checkProximity() {
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition((position) => {
+      const dist = calculateDistance(
+        position.coords.latitude,
+        position.coords.longitude,
+        this.restaurantCoords.lat,
+        this.restaurantCoords.lng
+      );
+
+      // If distance > 100 meters, flag as too far
+      if (dist > 0.1) {
+        this.isTooFar.set(true);
+      }
     });
   }
 }

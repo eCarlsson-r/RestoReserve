@@ -3,10 +3,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": ["node", "vite/client"]
   },
-  "files": ["src/main.ts", "src/main.server.ts"],
   "include": [
+    "src/main.ts",
+    "src/main.server.ts",
     "src/**/*.d.ts",
     "src/app/pages/**/*.page.ts",
     "src/server/middleware/**/*.ts"

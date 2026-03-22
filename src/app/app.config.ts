@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideFileRouter, requestContextInterceptor } from '@analogjs/router';
-import { LucideAngularModule, Bell } from 'lucide-angular';
+import { LucideAngularModule, Bell, User, Home, QrCode, Gift } from 'lucide-angular';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,6 +21,6 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([requestContextInterceptor])
     ),
     provideClientHydration(withEventReplay()),
-    importProvidersFrom(LucideAngularModule.pick({ Bell }))
+    importProvidersFrom(LucideAngularModule.pick({ Bell, User, Home, QrCode, Gift }))
   ],
 };
