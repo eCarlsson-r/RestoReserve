@@ -1,92 +1,113 @@
-import { Component, inject, signal } from '@angular/core';
-import { NgFor, NgIf } from '@angular/common';
-import { Router } from '@angular/router';
-import { ProductService, Product } from '../services/product.service';
-import { ProductDetailComponent } from '../components/product-detail-slideover.component';
+import { Component, inject, signal } from "@angular/core";
+import { Router } from "@angular/router";
+import { NgFor, NgIf } from "@angular/common";
+import { MenuService } from "../services/menu.service";
+import { Branch, Product } from "../../types";
+import { ProductDetailComponent } from "../components/product-detail-slideover.component";
+import { CartService } from "../services/cart.service";
 
 @Component({
   standalone: true,
   imports: [NgFor, NgIf, ProductDetailComponent],
   template: `
-    <div class="bg-stone-50 min-h-screen pb-20">
-      <section class="h-[60vh] relative flex items-center justify-center bg-brand-dark overflow-hidden">
-        <div class="absolute inset-0 bg-linear-to-b from-brand-dark/20 to-brand-dark/80 z-10"></div>
-        
-        <div class="relative z-20 text-center px-6">
-          <h1 class="font-display text-7xl text-white italic tracking-tighter leading-none mb-4">
+    <div class="w-full min-h-screen bg-stone-50 flex flex-col items-center">
+      <section class="w-full aspect-video md:aspect-21/9 bg-brand-dark relative flex items-center justify-center overflow-hidden">
+        <div class="relative z-10 text-center px-6 max-w-7xl mx-auto">
+          <h1 class="text-[clamp(3.5rem,12vw,9rem)] font-display text-white italic leading-[0.85] tracking-tighter mb-6">
             Red <span class="text-brand-primary">Velvet</span>
           </h1>
-          <p class="text-white/60 text-[10px] font-black uppercase tracking-[0.5em]">
-            Premium All-You-Can-Eat Dining
+          <p class="text-[clamp(0.7rem,2vw,1rem)] text-white/40 font-black uppercase tracking-[0.4em] md:tracking-[0.8em]">
+            The Art of Infinite Dining
           </p>
         </div>
       </section>
 
-      <section class="p-6 -mt-20 relative z-30">
-        <h3 class="text-white text-[10px] font-black uppercase mb-4 tracking-widest px-4">Our Locations</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div *ngFor="let category of categories()" 
-               class="bg-white rounded-5xl p-8 shadow-2xl border border-stone-100 group cursor-pointer"
-               (click)="selectCategory(category.slug)">
-            <div class="flex justify-between items-start mb-6">
-              <h2 class="font-display text-3xl italic text-brand-dark">{{ category.name }}</h2>
-              <div class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase animate-pulse">Open Now</div>
+      <section class="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 -mt-16 md:-mt-32 relative z-20 pb-24">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
+          
+          <div *ngFor="let branch of branches()" 
+              (click)="viewMenu(branch.slug)"
+              class="group bg-white rounded-2xl md:rounded-3xl p-8 md:p-12 shadow-2xl shadow-stone-200 border border-stone-100 flex flex-col justify-between transition-all hover:-translate-y-2 hover:shadow-brand-primary/5 cursor-pointer min-h-[320px]">
+            
+            <div class="space-y-4">
+              <div class="flex justify-between items-start">
+                <h2 class="font-display text-3xl md:text-5xl italic text-brand-dark leading-tight group-hover:text-brand-primary transition-colors">
+                  {{ branch.name }}
+                </h2>
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse mt-3"></span>
+              </div>
+              <p class="text-[10px] font-black uppercase text-slate-400 tracking-widest">{{ branch.city }}</p>
             </div>
-            <p class="text-xs text-slate-400 font-bold mb-4 uppercase">{{ category.description }}</p>
-            <button class="text-brand-primary text-[10px] font-black uppercase italic tracking-widest border-b-2 border-brand-primary pb-1">
-              Explore Menu →
-            </button>
+
+            <div class="pt-12 border-t border-stone-50 flex items-center justify-between">
+              <span class="text-[11px] font-black uppercase italic tracking-widest text-brand-primary">Explore Menu</span>
+              <span class="text-2xl group-hover:translate-x-2 transition-transform">→</span>
+            </div>
           </div>
+          
         </div>
       </section>
 
-      <section class="mt-12">
-        <div class="px-8 flex justify-between items-end mb-6">
-          <h4 class="font-display text-2xl italic text-brand-dark">Chef's Highlights</h4>
-          <a href="/login" class="text-[10px] font-black uppercase text-brand-primary italic">Join Members to Order</a>
+      <section class="w-full max-w-7xl mx-auto px-4 sm:px-8 lg:px-12">
+        <div class="flex justify-between items-end mb-8">
+          <h4 class="font-display text-3xl italic text-brand-dark">Signature Specialties</h4>
+          <a routerLink="/login" class="text-[10px] font-black uppercase text-brand-primary border-b-2 border-brand-primary/20 pb-1">
+            Join Members to Order
+          </a>
         </div>
         
-        <div class="flex overflow-x-auto gap-6 px-8 no-scrollbar">
-          <div *ngFor="let prod of featuredProducts()" (click)="openDetail(prod)" class="flex-none w-64 group">
-            <div class="aspect-square rounded-4xl overflow-hidden mb-4 shadow-lg ring-1 ring-stone-200">
-               <img [src]="prod.image || 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&auto=format&fit=crop'" class="w-full h-full object-cover transition-transform group-hover:scale-110 duration-700">
+        <div class="flex overflow-x-auto gap-8 no-scrollbar pb-8">
+          <div *ngFor="let prod of featuredProducts()" (click)="openDetail(prod)" class="flex-none w-72 group cursor-pointer">
+            <div class="aspect-4/5 rounded-3xl overflow-hidden mb-5 shadow-xl ring-1 ring-stone-200">
+               <img [src]="prod.files?.[0]?.url || 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800'" 
+                    class="w-full h-full object-cover grayscale-20 group-hover:grayscale-0 transition-all duration-700">
             </div>
-            <h5 class="font-black uppercase italic text-xs mb-1 tracking-tighter">{{ prod.name }}</h5>
-            <p class="text-[10px] text-slate-400 font-bold">Included in Platinum Package</p>
+            <div class="px-2">
+              <h5 class="font-black uppercase italic text-sm mb-1 tracking-tight text-brand-dark">{{ prod.name }}</h5>
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-brand-primary"></span>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">Premium Buffet Inclusion</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       <app-product-detail 
-        *ngIf="activeProduct()" 
-        [product]="activeProduct()" 
-        (close)="closeDetail()" 
+        *ngIf="selectedProduct()" 
+        [product]="selectedProduct()" 
+        [session]="currentSession()"
+        (close)="selectedProduct.set(null)"
+        (addToCart)="handleAddToCart($event)"
       />
     </div>
   `
 })
 export default class LandingPage {
-  private productService = inject(ProductService);
   private router = inject(Router);
+  private service = inject(MenuService);
+  private cartService = inject(CartService);
 
-  categories = signal<any[]>([]);
+  branches = signal<Branch[]>([]);
   featuredProducts = signal<Product[]>([]);
-  activeProduct = signal<any | null>(null);
-
-  openDetail(product: any) {
-    this.activeProduct.set(product);
-  }
-
-  closeDetail() {
-    this.activeProduct.set(null);
-  }
-
+  selectedProduct = signal<any | null>(null);
+  currentSession = signal(null);
+  
   ngOnInit() {
-    this.productService.getCategories().subscribe(data => this.categories.set(data));
-    this.productService.getFeaturedProducts().subscribe(data => this.featuredProducts.set(data.slice(0, 5)));
+    this.service.loadHome().subscribe(data => {
+      this.branches.set(data.branches);
+      this.featuredProducts.set(data.featured_products);
+    });
   }
 
-  selectCategory(slug: string) {
-    this.router.navigate([`/menu/${slug}`]);
+  viewMenu(slug: string) {
+    this.router.navigate([`/${slug}`]); // Navigates to the branch category list
   }
+
+  handleAddToCart($event: any) {
+    this.cartService.addToCart($event);
+    this.selectedProduct.set(null);
+  }
+
+  openDetail(product: any) { this.selectedProduct.set(product); }
 }

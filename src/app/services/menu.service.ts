@@ -1,7 +1,8 @@
 // src/app/services/menu.service.ts
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
+import { Product } from 'src/types';
 
 export interface CallWaiterRequest {
   table: string | number;
@@ -33,6 +34,18 @@ export class MenuService {
   categories = signal<any[]>([]);
   products = signal<any[]>([]);
   isLoading = signal(false);
+
+  loadHome() {
+    return this.http.get<any>(`${this.apiUrl}/home`);
+  }
+
+  getBranchCategories(slug: string) {
+    return this.http.get<any>(`${this.apiUrl}/branches/${slug}/categories`);
+  }
+
+  getCategoryProducts(branch: string, category: string) {
+    return this.http.get<any>(`${this.apiUrl}/products?branch=${branch}&category=${category}`);
+  }
 
   /**
    * Semantically named method for calling a waiter

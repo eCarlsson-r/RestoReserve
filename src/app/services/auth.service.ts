@@ -27,6 +27,10 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/login`, credentials);
   }
 
+  register(credentials: { name: string, dob: string, username: string, password: string }) {
+    return this.http.post<any>(`${this.apiUrl}/register`, credentials);
+  }
+
   saveToken(token: string) {
     if (isPlatformBrowser(this.platformId)) localStorage.setItem('token', token);
     this.token.set(token);

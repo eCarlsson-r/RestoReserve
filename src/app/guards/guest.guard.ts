@@ -8,6 +8,6 @@ export const guestGuard: CanActivateFn = () => {
 
   // If logged in, they shouldn't be here (e.g. at /login), send to dashboard.
   return auth.isLoggedIn() 
-    ? router.createUrlTree(['/dashboard']) 
+    ? router.createUrlTree(['/profile']) 
     : true;
 };

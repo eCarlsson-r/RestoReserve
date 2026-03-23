@@ -14,18 +14,23 @@ export interface ApiResponse<T> {
 export interface Branch extends Timestamps {
     id: number
     name: string
+    slug: string
     address: string
+    city: string
     phone: string
     floor_number: number
     table_number: number
     kitchen_no: number
     bartender_no: number
+    is_active: boolean
     files?: File[]
 }
 
 export interface Category extends Timestamps {
     id: number
     name: string
+    slug: string
+    icon_name: string
     kitchen_process: string
     description: string
     products?: Product[]
@@ -41,9 +46,12 @@ export interface Product extends Timestamps {
     price: number
     cost?: number
     discount?: number
-    soldout?: number
     category?: Category
     recipe?: Recipe[]
+    is_buffet_eligible: boolean
+    pivot: {
+        is_active: boolean
+    }
     files?: File[]
 }
 

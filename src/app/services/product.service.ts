@@ -1,27 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-
-/**
- * Product Interface (following HumanDesign-style explicit local typing)
- */
-export interface Product {
-  id: number;
-  name: string;
-  image: string;
-  price: number;
-  categoryId: number;
-  description?: string;
-}
-
-/**
- * Category Interface
- */
-export interface Category {
-  id: number;
-  name: string;
-  icon?: string;
-}
+import { Observable } from 'rxjs';
+import { Product, Category, Branch } from '../../types';
 
 /**
  * Response Interface for branch catalog
@@ -49,7 +29,7 @@ export class ProductService {
    * Using HumanDesign semantic naming style
    */
   getProducts(slug: string): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.apiUrl}/products${slug}`);
+    return this.http.get<Product[]>(`${this.apiUrl}/products/${slug}`);
   }
 
   /**
@@ -69,7 +49,7 @@ export class ProductService {
   /**
    * Fetch active branches for the landing page
    */
-  getCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(`${this.apiUrl}/categories`);
+  getBranches(): Observable<Branch[]> {
+    return this.http.get<Branch[]>(`${this.apiUrl}/branches`);
   }
 }

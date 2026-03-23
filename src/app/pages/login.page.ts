@@ -1,9 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../services/auth.service';
 import { RouteMeta } from '@analogjs/router';
-import { guestGuard } from '../../guards/guest.guard';
+import { guestGuard } from '../guards/guest.guard';
 
 export const routeMeta: RouteMeta = {
   canActivate: [guestGuard],

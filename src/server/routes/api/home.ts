@@ -1,12 +1,15 @@
 import { createError, defineEventHandler, getHeader } from 'h3';
-import { ApiResponse, Branch } from './types';
+import { ApiResponse, Product, Branch } from '../../../types';
 
 export default defineEventHandler(async (event) => {
   const token = getHeader(event, 'authorization');
 
   try {
-    const report: ApiResponse<Branch[]> = await $fetch(
-      `${process.env['VITE_API_URL']}/public/branches`,
+    const report: ApiResponse<{
+        featuredProducts: Product[],
+        branches: Branch[]
+    }> = await $fetch(
+      `${process.env['VITE_API_URL']}/public/home`,
       {
         headers: {
           authorization: `Bearer ${token}`
