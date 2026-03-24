@@ -15,7 +15,7 @@ import { CartService } from '../../services/cart.service';
     <div class="min-h-screen bg-stone-50 pb-24">
       <header class="sticky top-0 z-40 bg-white/80 backdrop-blur-md px-6 py-5 border-b border-stone-100 flex items-center justify-between">
         <div class="flex items-center gap-4">
-          <button (click)="goBack()" class="w-10 h-10 flex items-center justify-center rounded-full text-stone-50">←</button>
+          <button (click)="goBack()" class="w-10 h-10 flex items-center justify-center rounded-full bg-stone-50">←</button>
           <div>
             <h1 class="font-display text-2xl italic leading-none capitalize">{{ category() }}</h1>
             <p class="text-[8px] font-black uppercase tracking-widest text-slate-400 mt-1">{{ branchName() }}</p>
@@ -35,9 +35,10 @@ import { CartService } from '../../services/cart.service';
           <div class="flex-1 flex flex-col justify-center">
             <h3 class="font-black uppercase italic text-xs tracking-tight text-brand-dark mb-1">{{ item.name }}</h3>
             
-            <p class="font-display italic text-brand-primary">
-              {{ item.price | currency:'IDR':'symbol':'1.0-0' }}
-            </p>
+            <div class="font-display italic text-brand-primary" [class.border-emerald-500]="cartService.isProductIncluded(item.id)">
+              <span *ngIf="cartService.isProductIncluded(item.id)" class="text-emerald-500">✨ Included</span>
+              <span *ngIf="!cartService.isProductIncluded(item.id)">{{ item.price | currency:'IDR':'symbol':'1.0-0' }}</span>
+            </div>
           </div>
 
           <div *ngIf="!item.pivot.is_active" 
@@ -62,7 +63,7 @@ import { CartService } from '../../services/cart.service';
 export default class ProductListPage {
   private route = inject(ActivatedRoute);
   private service = inject(MenuService);
-  private cartService = inject(CartService);
+  cartService = inject(CartService);
   products = signal<Product[]>([]);
   branchName = signal<string | null>(null);
   isLoading = signal(false);

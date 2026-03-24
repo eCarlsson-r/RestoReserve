@@ -1,4 +1,4 @@
-import { Component, inject } from "@angular/core";
+import { Component, inject, output } from "@angular/core";
 import { CartService } from "../services/cart.service";
 import { CurrencyPipe, NgIf } from "@angular/common";
 
@@ -9,7 +9,7 @@ import { CurrencyPipe, NgIf } from "@angular/common";
   template: `
     <div *ngIf="cart.items().length > 0" 
          class="fixed bottom-10 left-1/2 -translate-x-1/2 w-[90%] max-w-lg z-90 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <button class="w-full bg-brand-dark text-white rounded-4xl p-2 flex items-center justify-between shadow-2xl border border-white/10 group active:scale-95 transition-all">
+      <button (click)="openCart.emit()" class="w-full bg-brand-dark text-white rounded-4xl p-2 flex items-center justify-between shadow-2xl border border-white/10 group active:scale-95 transition-all">
         
         <div class="flex items-center gap-4 ml-4">
           <div class="w-10 h-10 bg-brand-primary rounded-full flex items-center justify-center font-black italic text-sm">
@@ -30,4 +30,5 @@ import { CurrencyPipe, NgIf } from "@angular/common";
 })
 export class FloatingCartComponent {
   cart = inject(CartService);
+  openCart = output<void>();
 }

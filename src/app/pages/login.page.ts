@@ -1,9 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from "../services/auth.service";
 import { RouteMeta } from '@analogjs/router';
 import { guestGuard } from '../guards/guest.guard';
+import { ToastService } from '../services/toast.service';
 
 export const routeMeta: RouteMeta = {
   canActivate: [guestGuard],
@@ -11,62 +12,72 @@ export const routeMeta: RouteMeta = {
 
 @Component({
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   template: `
-    <div class="mx-auto w-full space-y-8">
-        <div class="text-center">
-          <h1 class="font-display text-5xl italic text-white">RV</h1>
-          <p class="text-brand-accent text-[10px] font-black uppercase tracking-[0.3em] mt-2">
-            Red Velvet Members
-          </p>
+    <div class="min-h-dvh bg-brand-dark flex flex-col p-8">
+      <header class="pt-12 pb-20">
+        <h1 class="font-display text-6xl italic text-white leading-none">Red Velvet</h1>
+        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-brand-primary mt-4">
+          Exclusive Membership
+        </p>
+      </header>
+
+      <main class="grow space-y-12 max-w-sm w-full mx-auto">
+        <div class="space-y-6">
+          <div class="group border-b border-white/10 focus-within:border-brand-primary transition-colors pb-2">
+            <label class="block text-[8px] font-black uppercase tracking-widest text-white/40 mb-2">Username</label>
+            <input type="text" [(ngModel)]="credentials().username" 
+                   class="w-full bg-transparent text-white font-display italic text-2xl outline-none placeholder:text-white/5"
+                   placeholder="yourname123">
+          </div>
+
+          <div class="group border-b border-white/10 focus-within:border-brand-primary transition-colors pb-2">
+            <label class="block text-[8px] font-black uppercase tracking-widest text-white/40 mb-2">Password</label>
+            <input type="password" [(ngModel)]="credentials().password"
+                   class="w-full bg-transparent text-white font-display italic text-2xl outline-none placeholder:text-white/5"
+                   placeholder="••••••••">
+          </div>
         </div>
 
-        <form (submit)="handleLogin()" class="space-y-4">
-          <div class="space-y-1">
-            <label class="text-[10px] font-black uppercase text-white/40 ml-4">Username</label>
-            <input 
-              [(ngModel)]="credentials().username" name="username"
-              type="text" placeholder="yourname123"
-              class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all"
-            />
-          </div>
-
-          <div class="space-y-1">
-            <label class="text-[10px] font-black uppercase text-white/40 ml-4">Password</label>
-            <input 
-              [(ngModel)]="credentials().password" name="password"
-              type="password" placeholder="••••••••"
-              class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition-all"
-            />
-          </div>
-
-          <button 
-            type="submit"
-            class="w-full py-5 bg-brand-primary text-white rounded-2xl font-black uppercase italic shadow-xl shadow-brand-primary/20 active:scale-95 transition-transform"
-          >
-            Enter The Buffet
+        <div class="space-y-6">
+          <button (click)="handleLogin()" 
+                  [disabled]="isLoading()"
+                  class="w-full py-6 bg-brand-primary text-white rounded-2xl font-black uppercase italic tracking-widest shadow-2xl shadow-brand-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50">
+            {{ isLoading() ? 'Authenticating...' : 'Sign In' }}
           </button>
-        </form>
+          
+          <p class="text-center text-[10px] text-white/30 font-black uppercase tracking-widest">
+            Don't have an account? 
+            <a routerLink="/register" class="text-brand-primary ml-2">Register</a>
+          </p>
+        </div>
+      </main>
 
-        <p class="text-center text-white/40 text-xs">
-          Don't have an account? 
-          <a href="/register" class="text-brand-accent font-bold">Sign Up</a>
-        </p>
-      </div>
+      <footer class="pb-8 text-center">
+        <p class="text-[8px] font-bold text-white/20 uppercase tracking-[0.5em]">Reserved for our finest guests</p>
+      </footer>
+    </div>
   `
 })
 export default class LoginPage {
-  authService = inject(AuthService);
-  router = inject(Router);
+  private router = inject(Router);
+  private authService = inject(AuthService);
+  private toastService = inject(ToastService);
+  
   credentials = signal({ username: '', password: '' });
+  isLoading = signal(false);
 
   async handleLogin() {
+    this.isLoading.set(true);
+
     this.authService.login(this.credentials()).subscribe({
       next: (res) => {
+        this.authService.saveUser(res.user);
         this.authService.saveToken(res.token);
-        this.router.navigate(['/']);
+        this.isLoading.set(false);
+        this.router.navigate(['/profile']);
       },
-      error: () => alert("Invalid credentials")
+      error: () => this.toastService.show("Invalid credentials", "error")
     });
   }
 }

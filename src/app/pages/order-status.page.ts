@@ -1,75 +1,72 @@
-import { Component, inject, signal, computed } from '@angular/core';
-import { CartService } from '../services/cart.service';
-import { CommonModule } from '@angular/common';
+import { Component, inject, signal } from "@angular/core";
+import { CartService } from "../services/cart.service";
+import { NgIf } from "@angular/common";
+import { RouterLink } from "@angular/router";
 
 @Component({
   standalone: true,
-  imports: [CommonModule],
+  imports: [NgIf, RouterLink],
   template: `
-    <div class="min-h-screen bg-brand-dark text-white p-8 md:p-16 flex flex-col items-center justify-center space-y-12">
+    <div class="min-h-screen bg-brand-dark text-white flex flex-col items-center justify-center p-8 text-center">
       
-      <div class="text-center space-y-2">
-        <div class="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
-          <span class="text-2xl">✓</span>
-        </div>
-        <h1 class="font-display text-4xl italic">Order Sent to Kitchen</h1>
-        <p class="text-[10px] font-black uppercase tracking-[0.4em] text-white/40">Preparing your selection</p>
+      <div class="w-24 h-24 bg-brand-primary rounded-full flex items-center justify-center mb-8 animate-bounce">
+        <span class="text-4xl text-white">✓</span>
       </div>
 
-      <div *ngIf="cart.currentSession()?.is_buffet" class="relative w-64 h-64 flex items-center justify-center">
-        <svg class="absolute inset-0 w-full h-full -rotate-90">
-          <circle cx="128" cy="128" r="120" stroke="currentColor" stroke-width="4" fill="transparent" class="text-white/10" />
-          <circle cx="128" cy="128" r="120" stroke="currentColor" stroke-width="4" fill="transparent" 
-                  class="text-brand-primary transition-all duration-1000"
-                  [style.stroke-dasharray]="754"
-                  [style.stroke-dashoffset]="dashOffset()" />
-        </svg>
+      <h1 class="font-display text-5xl italic mb-4">Order Received</h1>
+      <p class="text-white/40 text-[10px] font-black uppercase tracking-[0.3em] mb-12">
+        Our chefs are preparing your selection
+      </p>
+
+      <div *ngIf="cart.currentSession()?.is_buffet" 
+           class="w-full max-w-sm p-10 rounded-[3rem] border border-white/10 bg-white/5 backdrop-blur-md">
         
-        <div class="text-center">
-          <p class="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Time Remaining</p>
-          <span class="font-display text-6xl italic tracking-tighter">{{ timeLeft() }}</span>
+        <p class="text-[10px] font-black uppercase tracking-widest text-brand-primary mb-4">
+          {{ cart.currentSession()?.buffet?.name }} Session
+        </p>
+        
+        <div class="font-display text-7xl italic tracking-tighter mb-4">
+          {{ timeLeft() }}
         </div>
+        
+        <p class="text-white/40 text-[8px] font-bold uppercase tracking-widest">
+          Remaining for All-You-Can-Eat Orders
+        </p>
       </div>
 
-      <div class="w-full max-w-xs space-y-4">
-        <button routerLink="/" class="w-full py-5 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl font-black uppercase italic tracking-widest text-[10px] hover:bg-white/20 transition-all">
-          Order More Items
-        </button>
-        <p class="text-center text-[8px] font-bold text-white/20 uppercase">Table 12 • Server: Budi</p>
-      </div>
+      <button routerLink="/" class="mt-12 text-[10px] font-black uppercase italic border-b border-brand-primary pb-1">
+        Back to Menu
+      </button>
     </div>
   `
 })
-export default class OrderStatusPage {
+export default class OrderSuccessPage {
   cart = inject(CartService);
-  
-  // Logic for the 90-minute countdown
-  remainingSeconds = signal(5400); // 90 minutes
-  
-  timeLeft = computed(() => {
-    const m = Math.floor(this.remainingSeconds() / 60);
-    const s = this.remainingSeconds() % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  });
-
-  dashOffset = computed(() => {
-    const total = 5400;
-    const progress = this.remainingSeconds() / total;
-    return 754 * (1 - progress);
-  });
+  timeLeft = signal('00:00');
 
   constructor() {
-    if (this.cart.currentSession()?.expires_at) {
-      const endAt = new Date(this.cart.currentSession()!.expires_at!).getTime();
-      const now = new Date().getTime();
-      this.remainingSeconds.set(Math.max(0, Math.floor((endAt - now) / 1000)));
-    }
-    
-    // Simple timer interval
+    this.startCountdown();
+  }
+
+  startCountdown() {
+    const expiry = this.cart.currentSession()?.expires_at;
+    if (!expiry) return;
+
     setInterval(() => {
-      if (this.remainingSeconds() > 0) {
-        this.remainingSeconds.update(s => s - 1);
+      const now = new Date().getTime();
+      const distance = new Date(expiry).getTime() - now;
+
+      if (distance < 0) {
+        this.timeLeft.set('00:00');
+        return;
       }
+
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      
+      this.timeLeft.set(
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+      );
     }, 1000);
   }
 }

@@ -36,16 +36,6 @@ import { NgFor, NgIf } from '@angular/common';
           </a>
         </div>
       </section>
-
-      <div class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-50">
-        <div class="bg-brand-dark/95 backdrop-blur-lg rounded-full p-2 shadow-2xl flex items-center justify-between border border-white/10">
-          <button class="flex-1 py-3 text-white text-[10px] font-black uppercase tracking-widest italic">Menu</button>
-          <div class="w-px h-4 bg-white/20"></div>
-          <button class="flex-1 py-3 text-white/50 text-[10px] font-black uppercase tracking-widest italic hover:text-white transition-colors">Search</button>
-          <div class="w-px h-4 bg-white/20"></div>
-          <button class="flex-1 py-3 text-white/50 text-[10px] font-black uppercase tracking-widest italic hover:text-white transition-colors">Cart (0)</button>
-        </div>
-      </div>
     </div>
   `
 })

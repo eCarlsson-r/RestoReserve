@@ -1,5 +1,6 @@
-import { Component, input, output } from "@angular/core";
+import { Component, inject, input, output } from "@angular/core";
 import { CurrencyPipe, NgIf } from "@angular/common";
+import { CartService } from "../services/cart.service";
 
 @Component({
   selector: 'app-product-detail',
@@ -26,17 +27,10 @@ import { CurrencyPipe, NgIf } from "@angular/common";
             </div>
             
             <div class="text-right">
-              <ng-container *ngIf="isIncludedInBuffet(); else alaCartePrice">
-                <span class="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase rounded-full mb-1">Included</span>
-                <p class="font-display text-3xl italic text-emerald-600">Rp 0</p>
-              </ng-container>
-              
-              <ng-template #alaCartePrice>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Ala Carte</p>
-                <p class="font-display text-3xl italic text-brand-dark">
-                  {{ (product().pivot?.price || product().price) | currency:'IDR':'symbol':'1.0-0' }}
-                </p>
-              </ng-template>
+              <div [class.border-emerald-500]="cart.isProductIncluded(product().id)">
+                <span *ngIf="cart.isProductIncluded(product().id)" class="text-emerald-500">✨ Included</span>
+                <span *ngIf="!cart.isProductIncluded(product().id)">{{ product().price | currency:'IDR':'symbol':'1.0-0' }}</span>
+              </div>
             </div>
           </div>
 
@@ -45,11 +39,6 @@ import { CurrencyPipe, NgIf } from "@angular/common";
             <p class="text-stone-500 leading-relaxed font-light italic text-lg">
               {{ product().description || 'A masterpiece of flavor, prepared with the finest ingredients by our master chefs.' }}
             </p>
-          </div>
-
-          <div *ngIf="product().is_buffet_eligible" class="p-6 bg-emerald-50/50 rounded-4xl border border-emerald-100 flex items-center gap-4">
-            <span class="text-2xl">✨</span>
-            <p class="text-xs font-medium text-emerald-800">This item is part of our **All-You-Can-Eat** event packages.</p>
           </div>
         </div>
 
@@ -70,6 +59,7 @@ export class ProductDetailComponent {
   session = input<any>(null); // Passed from the parent page
   close = output<void>();
   addToCart = output<any>();
+  cart = inject(CartService);
 
   isIncludedInBuffet(): boolean {
     const s = this.session();

@@ -67,7 +67,7 @@ export interface Customer extends Timestamps {
     discount: number
     tax: number
     img_no: number
-    account_id?: number
+    user_id?: number
 }
 
 export interface Employee extends Timestamps {
@@ -84,7 +84,7 @@ export interface Employee extends Timestamps {
     mobile?: string
     email?: string
     img_no: number
-    account_id?: number
+    user_id?: number
     branch?: Branch
     user?: User
 }
@@ -141,6 +141,8 @@ export interface Sale extends Timestamps {
     invoice?: SaleInvoice
     buffet?: BuffetPackage
     buffet_end_at?: string | null
+    buffet_price_adult?: number
+    buffet_price_child?: number
 }
 
 export interface SaleRecord extends Timestamps {

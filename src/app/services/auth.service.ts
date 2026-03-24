@@ -1,62 +1,67 @@
 // src/app/services/auth.service.ts
-import { Inject, Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
-
-export interface AuthResponse {
-  token: string;
-  user?: any;
-}
+import { Injectable, inject, signal } from '@angular/core';
+import { ApiService } from './api.service';
+import { TokenService } from './token.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private http = inject(HttpClient);
+  private token = inject(TokenService);
+  private api = inject(ApiService);
+  private router = inject(Router);
+
   // Points to your Laravel Auth endpoint
-  private apiUrl = '/api';
-  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
+  constructor() {
+    // If we have a token but no user, go get the user data from Laravel
+    if (this.token.isLoggedIn() && !this.user()) {
+      this.fetchCurrentUser();
+    }
+  }
 
   // Global Signals for authentication state
-  token = signal<string | null>(isPlatformBrowser(this.platformId) ? localStorage.getItem('token') : null);
   user = signal<any | null>(null);
   isLoading = signal(false);
 
   login(credentials: { username: string, password: string }) {
-    return this.http.post<any>(`${this.apiUrl}/login`, credentials);
+    return this.api.post<any>(`login`, credentials);
   }
 
-  register(credentials: { name: string, dob: string, username: string, password: string }) {
-    return this.http.post<any>(`${this.apiUrl}/register`, credentials);
+  register(credentials: { name: string, dob: string, phone: string, email: string, username: string, password: string }) {
+    return this.api.post<any>(`register`, credentials);
   }
 
-  saveToken(token: string) {
-    if (isPlatformBrowser(this.platformId)) localStorage.setItem('token', token);
-    this.token.set(token);
+  fetchCurrentUser() {
+    this.api.get<any>(`user`).subscribe({
+      next: (user) => this.saveUser(user),
+      error: () => this.logout() // Token probably expired
+    });
   }
 
   saveUser(user: any) {
-    this.user.set(user);
+    this.user.set(user.customer);
   }
 
-  getToken() {
-    return this.token();
-  }
-  
-  isLoggedIn() {
-    return !!this.token();
+  saveToken(token: string) {
+    this.token.set(token);
   }
 
   getUser() {
-    return this.http.get<any>(`${this.apiUrl}/user`);
+    return this.user();
+  }
+
+  getUserHistory() {
+    return this.api.get<any>(`user/history`);
+  }
+
+  isLoggedIn() {
+    return this.token.isLoggedIn();
   }
 
   logout() {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('token');
-    }
-    this.token.set(null);
+    this.token.clear();
     this.user.set(null);
+    this.router.navigate(['/']);
   }
 }

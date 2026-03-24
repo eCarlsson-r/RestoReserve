@@ -1,8 +1,6 @@
 // src/app/services/menu.service.ts
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
-import { Product } from 'src/types';
+import { ApiService } from './api.service';
 
 export interface CallWaiterRequest {
   table: string | number;
@@ -27,8 +25,7 @@ export interface OrderRequest {
 
 @Injectable({ providedIn: 'root' })
 export class MenuService {
-  private http = inject(HttpClient);
-  private apiUrl = '/api';
+  private api = inject(ApiService);
 
   // Signals for high-performance reactivity
   categories = signal<any[]>([]);
@@ -36,15 +33,19 @@ export class MenuService {
   isLoading = signal(false);
 
   loadHome() {
-    return this.http.get<any>(`${this.apiUrl}/home`);
+    return this.api.get<any>(`home`);
   }
 
   getBranchCategories(slug: string) {
-    return this.http.get<any>(`${this.apiUrl}/branches/${slug}/categories`);
+    return this.api.get<any>(`branches/${slug}/categories`);
   }
 
   getCategoryProducts(branch: string, category: string) {
-    return this.http.get<any>(`${this.apiUrl}/products?branch=${branch}&category=${category}`);
+    return this.api.get<any>(`products?branch=${branch}&category=${category}`);
+  }
+
+  getBranchBuffets(slug: string) {
+    return this.api.get<any>(`branches/${slug}/buffets`);
   }
 
   /**
@@ -52,14 +53,6 @@ export class MenuService {
    * (HumanDesign style)
    */
   callWaiter(req: CallWaiterRequest) {
-    return this.http.post(`${this.apiUrl}/call-waiter`, req);
-  }
-
-  /**
-   * Submit an order to the kitchen/system
-   * (HumanDesign style)
-   */
-  submitOrder(order: OrderRequest) {
-    return this.http.post(`${this.apiUrl}/submit-order`, order);
+    return this.api.post(`call-waiter`, req);
   }
 }
