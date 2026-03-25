@@ -13,7 +13,7 @@ export const routeMeta: RouteMeta = {
 
 @Component({
   standalone: true,
-  imports: [NgIf, NgFor, DatePipe, CurrencyPipe, DecimalPipe],
+  imports: [NgIf, NgFor, DatePipe, CurrencyPipe, DecimalPipe, BirthdayRewardComponent],
   template: `
     <div class="min-h-screen bg-stone-50 pb-32" *ngIf="auth.user()">
       <header class="p-8 bg-brand-dark text-white rounded-b-[3rem] shadow-2xl">
@@ -32,6 +32,8 @@ export const routeMeta: RouteMeta = {
           </div>
         </div>
       </header>
+
+      <app-birthday-reward *ngIf="birthday()" />
 
       <section class="max-w-xl mx-auto px-8 mt-12 space-y-6">
         <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400">Past Visits</h3>
@@ -78,12 +80,11 @@ export const routeMeta: RouteMeta = {
 export default class ProfilePage implements OnInit {
   auth = inject(AuthService);
   cart = inject(CartService);
-  birthdayReward = inject(BirthdayRewardComponent);
-
 
   // Link this component's user signal directly to the AuthService user signal
   user = signal<any>(null);
   history = signal<any[]>([]);
+  birthday = signal(false);
 
   ngOnInit() {
     this.user.set(this.auth.getUser());
@@ -92,8 +93,7 @@ export default class ProfilePage implements OnInit {
     });
 
     if (this.user()?.customer?.can_claim_birthday_buffet) {
-      // Delay it slightly for that "Surprise" effect after the page loads
-      setTimeout(() => this.birthdayReward.show.set(true), 1000);
+      setTimeout(() => this.birthday.set(true), 1000);
     }
   }
 

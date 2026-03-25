@@ -5,7 +5,10 @@ import { ToastService } from './toast.service';
 
 export interface Session {
   branch_slug: string;
+  branch_name: string;
   table_id: string;
+  table_number: string;
+  floor_number: string;
   is_buffet: boolean;
   buffet?: BuffetPackage;
   reservation_id?: number; // Null for Scenario B (Walk-in)

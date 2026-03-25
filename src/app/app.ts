@@ -28,7 +28,7 @@ import { ToastService } from './services/toast.service';
                 [class.animate-pulse]="cart.remainingSeconds()! <= 300">
           </span>
           <p class="text-[8px] font-black uppercase tracking-[0.2em] text-white/60">
-            Table {{ cart.currentSession()?.table_id }}
+            Table {{ cart.currentSession()?.table_number }} at {{ cart.currentSession()?.floor_number }}F of {{ cart.currentSession()?.branch_name }}
           </p>
         </div>
 

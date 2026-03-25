@@ -23,7 +23,7 @@ import { AuthService } from "../services/auth.service";
             The Art of Infinite Dining
           </p>
           <div class="flex flex-col gap-4 px-8 mt-12">
-            <a routerLink="/reserve" 
+            <a *ngIf="loggedIn()" routerLink="/reservation" 
               class="w-full py-6 bg-brand-primary text-white rounded-2xl font-black uppercase italic tracking-widest text-center shadow-xl shadow-brand-primary/20">
               Book a Buffet
             </a>

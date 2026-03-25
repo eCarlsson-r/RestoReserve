@@ -48,7 +48,7 @@ export class AuthService {
   }
 
   getUser() {
-    return this.user();
+    return this.api.get<any>(`user`);
   }
 
   getUserHistory() {

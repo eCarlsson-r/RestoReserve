@@ -1,26 +1,46 @@
-# RestoReserve
+# RestoReserve 📅
 
-This project was generated with [Analog](https://analogjs.org), the fullstack meta-framework for Angular.
+A sleek and user-friendly reservation portal built with **AnalogJS** (the fullstack meta-framework for Angular). This application provides a seamless booking experience, public catalog viewing, and direct integration with the RestoSystem-API.
 
-## Setup
+## ✨ Key Features
 
-Run `npm install` to install the application dependencies.
+- **Interactive Reservations**: Intuitive interfaces for customers to make and manage their restaurant reservations.
+- **Public Product Catalog**: Dynamic fetching and display of available buffet and alacarte items directly from the backend.
+- **Modern Layout Structure**: Clean, organized, and responsive layouts designed for a premium aesthetic and optimal user experience.
+- **API Integration**: Robust and adaptive data fetching logic, seamlessly connecting with the Laravel API.
 
-## Development
+## 🚀 Tech Stack
 
-Run `npm start` for a dev server. Navigate to `http://localhost:5173/`. The application automatically reloads if you change any of the source files.
+- **Framework**: [AnalogJS](https://analogjs.org) (Angular + Vite)
+- **Language**: TypeScript
+- **Testing**: [Vitest](https://vitest.dev)
 
-## Build
+## 📦 Installation & Setup
 
-Run `npm run build` to build the client/server project. The client build artifacts are located in the `dist/analog/public` directory. The server for the API build artifacts are located in the `dist/analog/server` directory.
+```bash
+# Install dependencies
+npm install
 
-## Test
+# Start development server
+npm start
+```
 
-Run `npm run test` to run unit tests with [Vitest](https://vitest.dev).
+## 🛠️ Configuration
 
-## Community
+To build the client/server project, run:
 
-- Visit and Star the [GitHub Repo](https://github.com/analogjs/analog)
-- Join the [Discord](https://chat.analogjs.org)
-- Follow us on [Twitter](https://twitter.com/analogjs)
-- Become a [Sponsor](https://github.com/sponsors/brandonroberts)
+```bash
+npm run build
+```
+
+The client build artifacts are located in the `dist/analog/public` directory, and the server artifacts in `dist/analog/server`.
+
+## 📖 Architecture Highlights
+
+- **File-based Routing**: Utilizes AnalogJS's efficient routing mechanism (e.g., `[branchSlug].page.ts`) for clean component handling.
+- **Service-Oriented Data Fetching**: Clean separation of concerns when retrieving data from endpoints like `/api/public/products...`.
+- **Modern Angular Lifecycle**: Embraces the latest Angular features to ensure stability and state management throughout the application.
+
+---
+
+Developed with ❤️ for Modern Restaurants.
