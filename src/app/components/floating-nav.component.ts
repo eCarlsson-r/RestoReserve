@@ -3,6 +3,7 @@ import { NgIf } from "@angular/common";
 import { RouterLink } from "@angular/router";
 import { CartService } from "../services/cart.service";
 import { AuthService } from "../services/auth.service";
+import { I18nService } from "../services/i18n.service";
 
 @Component({
   selector: 'app-floating-nav',
@@ -11,38 +12,38 @@ import { AuthService } from "../services/auth.service";
   template: `
     <div class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-50 animate-in slide-in-from-bottom-10 duration-700">
       <div class="bg-brand-dark/95 backdrop-blur-xl rounded-full p-2 shadow-2xl flex items-center justify-between border border-white/10">
-        
+
         <a routerLink="/" class="flex-1 py-3 text-center text-white text-[10px] font-black uppercase tracking-widest italic transition-opacity hover:opacity-70">
-          Menu
+          {{ t()('nav.menu') }}
         </a>
 
         <div class="w-px h-4 bg-white/10"></div>
 
-        <button *ngIf="cart.currentSession()" (click)="callWaiter.emit()" 
+        <button *ngIf="cart.currentSession()" (click)="callWaiter.emit()"
                 class="flex-1 py-3 flex items-center justify-center gap-2 group text-white text-[10px] font-black uppercase tracking-widest italic">
-          Call Waiter
+          {{ t()('nav.callWaiter') }}
         </button>
 
         <div class="w-px h-4 bg-white/10"></div>
 
-        <button *ngIf="!cart.currentSession()?.is_buffet" 
+        <button *ngIf="!cart.currentSession()?.is_buffet"
                 (click)="openUpgrade.emit()"
                 class="flex-1 py-3 text-brand-primary text-[10px] font-black uppercase tracking-widest italic animate-pulse">
-          Go Buffet
+          {{ t()('nav.goBuffet') }}
         </button>
-        <button *ngIf="cart.currentSession()?.is_buffet" 
+        <button *ngIf="cart.currentSession()?.is_buffet"
                 class="flex-1 py-3 text-white/50 text-[10px] font-black uppercase tracking-widest italic">
-          Search
+          {{ t()('nav.search') }}
         </button>
 
         <div class="w-px h-4 bg-white/10"></div>
 
-        <button (click)="openCart.emit()" 
+        <button (click)="openCart.emit()"
                 class="flex-1 py-3 flex items-center justify-center gap-2 group">
           <span class="text-white text-[10px] font-black uppercase tracking-widest italic">
-            Cart
+            {{ t()('nav.cart') }}
           </span>
-          <span *ngIf="cart.items().length > 0" 
+          <span *ngIf="cart.items().length > 0"
                 class="bg-brand-primary text-white text-[9px] font-black w-5 h-5 rounded-full flex items-center justify-center scale-110 group-active:scale-90 transition-transform">
             {{ cart.items().length }}
           </span>
@@ -51,10 +52,10 @@ import { AuthService } from "../services/auth.service";
         <div class="w-px h-4 bg-white/10"></div>
 
         <a *ngIf="loggedIn()" routerLink="/profile" class="flex-1 py-3 text-center text-white text-[10px] font-black uppercase tracking-widest italic transition-opacity hover:opacity-70">
-          Profile
+          {{ t()('nav.profile') }}
         </a>
         <a *ngIf="!loggedIn()" routerLink="/login" class="flex-1 py-3 text-center text-white text-[10px] font-black uppercase tracking-widest italic transition-opacity hover:opacity-70">
-          Login
+          {{ t()('nav.login') }}
         </a>
       </div>
     </div>
@@ -63,6 +64,8 @@ import { AuthService } from "../services/auth.service";
 export class FloatingNavComponent {
   cart = inject(CartService);
   auth = inject(AuthService);
+  private i18n = inject(I18nService);
+  t = this.i18n.t;
   openCart = output<void>();
   openUpgrade = output<void>();
   callWaiter = output<void>();
