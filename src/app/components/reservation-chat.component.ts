@@ -14,15 +14,15 @@ const HISTORY_KEY = 'restoreserve_chat_history';
   standalone: true,
   imports: [NgIf, NgFor, NgClass, FormsModule],
   template: `
-    <!-- Floating launcher -->
+    <!-- Floating launcher — sits above the floating nav pill on small screens -->
     <button *ngIf="!open()" (click)="open.set(true)"
-            class="fixed bottom-8 right-6 z-100 flex items-center gap-3 bg-brand-dark text-white pl-5 pr-2 py-2 rounded-full shadow-2xl border border-white/10 active:scale-95 transition-all animate-in fade-in slide-in-from-bottom-4 duration-500">
+            class="fixed bottom-24 lg:bottom-8 right-4 lg:right-6 z-100 flex items-center gap-3 bg-brand-dark text-white pl-5 pr-2 py-2 rounded-full shadow-2xl border border-white/10 active:scale-95 transition-all animate-in fade-in slide-in-from-bottom-4 duration-500">
       <span class="text-[10px] font-black uppercase tracking-widest italic">{{ t()('chat.open') }}</span>
       <span class="w-10 h-10 bg-brand-primary rounded-full flex items-center justify-center text-lg">✦</span>
     </button>
 
     <!-- Chat panel -->
-    <div *ngIf="open()" class="fixed bottom-6 right-4 sm:right-6 z-100 w-[92%] max-w-sm animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div *ngIf="open()" class="fixed bottom-24 lg:bottom-6 right-4 sm:right-6 z-100 w-[92%] max-w-sm animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div class="bg-white rounded-[2.5rem] shadow-2xl border border-stone-100 overflow-hidden flex flex-col" style="height: min(34rem, 75vh)">
 
         <!-- Header -->

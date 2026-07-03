@@ -8,12 +8,14 @@ import { CartDrawerComponent } from './components/cart-drawer.component';
 import { UpgradeModalComponent } from './components/upgrade-modal.component';
 import { FloatingCartComponent } from './components/floating-cart.component';
 import { CallWaiterModalComponent } from "./components/call-waiter-modal.component";
+import { ReservationChatComponent } from './components/reservation-chat.component';
 import { ToastService } from './services/toast.service';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NgIf, NgFor, FloatingNavComponent, FloatingCartComponent, CartDrawerComponent, UpgradeModalComponent, CallWaiterModalComponent],
+  imports: [RouterOutlet, NgIf, NgFor, FloatingNavComponent, FloatingCartComponent, CartDrawerComponent, UpgradeModalComponent, CallWaiterModalComponent, ReservationChatComponent],
   template: `
     <div class="antialiased font-sans text-brand-dark selection:bg-brand-primary selection:text-white">
       
@@ -68,6 +70,8 @@ import { ToastService } from './services/toast.service';
 
       <app-call-waiter [(show)]="isCallWaiterOpen" />
 
+      <app-reservation-chat *ngIf="auth.isLoggedIn()" />
+
       <div class="fixed top-12 left-0 w-full z-100 px-6 pointer-events-none space-y-2">
         <div *ngFor="let t of toast.toasts()" 
              class="w-full max-w-sm mx-auto p-4 bg-brand-dark/95 backdrop-blur shadow-2xl rounded-2xl border border-white/10 flex items-center gap-4 animate-in slide-in-from-top duration-300 pointer-events-auto">
@@ -81,6 +85,7 @@ import { ToastService } from './services/toast.service';
 export class App {
   cart = inject(CartService);
   toast = inject(ToastService);
+  auth = inject(AuthService);
   
   isCartOpen = signal(false);
   isUpgradeOpen = signal(false);

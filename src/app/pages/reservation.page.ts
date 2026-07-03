@@ -6,7 +6,6 @@ import { NgFor, NgIf } from "@angular/common";
 import { Branch, BuffetPackage } from "src/types";
 import { RouteMeta } from '@analogjs/router';
 import { authGuard } from '../guards/auth.guard';
-import { ReservationChatComponent } from "../components/reservation-chat.component";
 
 export const routeMeta: RouteMeta = {
   canActivate: [authGuard],
@@ -15,7 +14,7 @@ export const routeMeta: RouteMeta = {
 @Component({
   standalone: true,
   selector: 'app-reserve',
-  imports: [FormsModule, NgIf, NgFor, ReservationChatComponent],
+  imports: [FormsModule, NgIf, NgFor],
   template: `
     <div class="p-8 space-y-8">
       <div class="flex items-start justify-between">
@@ -82,8 +81,6 @@ export const routeMeta: RouteMeta = {
         </button>
       </form>
     </div>
-
-    <app-reservation-chat [branchId]="form.branch_id || 1" />
   `
 })
 export default class ReservePage {
