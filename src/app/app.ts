@@ -10,7 +10,6 @@ import { FloatingCartComponent } from './components/floating-cart.component';
 import { CallWaiterModalComponent } from "./components/call-waiter-modal.component";
 import { ReservationChatComponent } from './components/reservation-chat.component';
 import { ToastService } from './services/toast.service';
-import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -70,7 +69,7 @@ import { AuthService } from './services/auth.service';
 
       <app-call-waiter [(show)]="isCallWaiterOpen" />
 
-      <app-reservation-chat *ngIf="auth.isLoggedIn()" />
+      <app-reservation-chat />
 
       <div class="fixed top-12 left-0 w-full z-100 px-6 pointer-events-none space-y-2">
         <div *ngFor="let t of toast.toasts()" 
@@ -85,7 +84,6 @@ import { AuthService } from './services/auth.service';
 export class App {
   cart = inject(CartService);
   toast = inject(ToastService);
-  auth = inject(AuthService);
   
   isCartOpen = signal(false);
   isUpgradeOpen = signal(false);
